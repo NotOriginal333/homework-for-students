@@ -25,20 +25,20 @@ import { Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-nativ
 
 export default function App() {
   const [count, setCount] = useState('');
-  const [limit, setLimit] = useState('');
+  const [request, setRequest] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!limit) {
+    if (!request?.limit) {
       return;
     }
 
     setLoading(true);
     setError('');
 
-    fetch(`https://jsonplaceholder.typicode.com/todos?_limit=${limit}`)
+    fetch(`https://jsonplaceholder.typicode.com/todos?_limit=${request.limit}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
@@ -48,7 +48,7 @@ export default function App() {
       .then((data) => setTasks(data))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [limit]);
+  }, [request]);
 
   return (
     <View style={styles.container}>
@@ -59,7 +59,7 @@ export default function App() {
         keyboardType="numeric"
         placeholder="Кількість завдань"
       />
-      <Button title="Отримати завдання" onPress={() => setLimit(count)} />
+      <Button title="Отримати завдання" onPress={() => setRequest({ limit: count })} />
       {loading && <Text style={styles.message}>Завантаження...</Text>}
       {error ? <Text style={styles.message}>Помилка: {error}</Text> : null}
       <FlatList
